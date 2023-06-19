@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "tRAwhEqr1qaGs1pTJ6zD6bmiV87KLcupmiCOdfaqJZfZbv7suQsxgN9bfww5iwAQPFln60laDmoHRPA6LP3xRQ==",
+  "success": true,
+  "projectFilePath": "D:\\Workspace\\AspNet\\Mango\\Mango.Web\\Mango.Web.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\User\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
