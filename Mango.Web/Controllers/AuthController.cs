@@ -1,9 +1,13 @@
 ﻿using Mango.Web.Models;
 using Mango.Web.Services.IServices;
 using Mango.Web.Utlities;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Mango.Web.Controllers
 {
@@ -29,6 +33,7 @@ namespace Mango.Web.Controllers
             if(responseDto is not null && responseDto.IsSuccess)
             {
                 LoginResponseDto loginResonseDto = JsonConvert.DeserializeObject<LoginResponseDto>(Convert.ToString(responseDto.Result));
+                await SignInUser(loginResponseDto); 
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -80,5 +85,33 @@ namespace Mango.Web.Controllers
         {
             return View(); 
         }
+
+        private async Task SignInUser(LoginResponseDto loginResponseDto)
+        {
+
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = jwtSecurityTokenHandler.ReadJwtToken(loginResponseDto.Token);
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+            claimsIdentity.AddClaims(new List<Claim>
+            {
+
+                new Claim(JwtRegisteredClaimNames.Email, jwtToken.Claims.FirstOrDefault( c => c.Type == JwtRegisteredClaimNames.Email).Value),
+                new Claim(JwtRegisteredClaimNames.Sub, jwtToken.Claims.FirstOrDefault( c => c.Type == JwtRegisteredClaimNames.Sub).Value),
+                new Claim(JwtRegisteredClaimNames.Name, jwtToken.Claims.FirstOrDefault( c => c.Type == JwtRegisteredClaimNames.Name).Value),
+
+
+                //Required by Microsoft Identity 
+                new Claim(ClaimTypes.Name, jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Email).Value),
+
+
+
+
+
+            });
+
+            
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+        }
+
     }
 }
